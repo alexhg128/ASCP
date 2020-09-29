@@ -4,6 +4,7 @@ import { Server } from './messaging/server_interface';
 
 var win: BrowserWindow;
 var server: Server = new Server();
+//server.setKey("00000000012345");
 
 function createWindow () {
 

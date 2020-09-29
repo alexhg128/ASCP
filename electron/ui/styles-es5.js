@@ -18,7 +18,7 @@
 
     exports.push([module.i, "/* You can add global styles to this file, and also import other style files */\nbody {\n  background-color: #000;\n}", "", {
       "version": 3,
-      "sources": ["/Users/ophugo/Downloads/ASCP/angular/src/styles.scss", "styles.scss"],
+      "sources": ["/Users/alex/Code/ASCP/angular/src/styles.scss", "styles.scss"],
       "names": [],
       "mappings": "AAAA,8EAAA;AAGA;EACI,sBAAA;ACDJ",
       "file": "styles.scss",
@@ -464,7 +464,7 @@
   /***/
   function _(module, exports, __webpack_require__) {
     module.exports = __webpack_require__(
-    /*! /Users/ophugo/Downloads/ASCP/angular/src/styles.scss */
+    /*! /Users/alex/Code/ASCP/angular/src/styles.scss */
     "./src/styles.scss");
     /***/
   }

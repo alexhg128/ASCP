@@ -87,6 +87,8 @@ export class Server {
                 } else {
                     var frame = from_bytes(new Uint8Array(data));
                     this.on_message.next(frame.message);
+                    console.log("Received");
+                    console.log(frame);
                 }
             } catch(err) {
 
@@ -113,6 +115,8 @@ export class Server {
 
     send(message: string) {
         if(this.status != Status.LISTENING) {
+            console.log("Sending");
+            console.log(bytes);
             if(this.encrypt) {
                 var ascp = from_string_v1(message);
                 var bytes = ascp.to_encrypted_bytes(this.key);
@@ -127,12 +131,59 @@ export class Server {
 
     setKey(key:string) {
         this.key = CryptoJS.enc.Hex.parse(key);
+        console.log(this.key);
+        console.log(this.wordArrayToByteArray(this.key, 56));
+
         this.encrypt = true;
     }
 
     resetKet() {
         this.encrypt = false;
         this.key = undefined;
+    }
+
+    private byteArrayToWordArray(ba: any) {
+        var wa = [],
+            i;
+        for (i = 0; i < ba.length; i++) {
+            wa[(i / 4) | 0] |= ba[i] << (24 - 8 * i);
+        }
+    
+        return (CryptoJS.lib.WordArray as any).create(wa, ba.length);
+    }
+    
+    private wordToByteArray(word, length) {
+        var ba = [],
+            i,
+            xFF = 0xFF;
+        if (length > 0)
+            ba.push(word >>> 24);
+        if (length > 1)
+            ba.push((word >>> 16) & xFF);
+        if (length > 2)
+            ba.push((word >>> 8) & xFF);
+        if (length > 3)
+            ba.push(word & xFF);
+    
+        return ba;
+    }
+    
+    private wordArrayToByteArray(wordArray, length) {
+        if (wordArray.hasOwnProperty("sigBytes") && wordArray.hasOwnProperty("words")) {
+            length = wordArray.sigBytes;
+            wordArray = wordArray.words;
+        }
+    
+        var result = [],
+            bytes,
+            i = 0;
+        while (length > 0) {
+            bytes = this.wordToByteArray(wordArray[i], Math.min(4, length));
+            length -= bytes.length;
+            result.push(bytes);
+            i++;
+        }
+        return [].concat.apply([], result);
     }
 
 }
