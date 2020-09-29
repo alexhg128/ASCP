@@ -1,11 +1,9 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
+import { stat } from 'fs';
 import { Server } from './messaging/server_interface';
 
 var win: BrowserWindow;
 var server: Server = new Server();
-server.setKey("ABCDEF");
-// server.resetKey();
-// server.disconnect();
 
 function createWindow () {
 
@@ -22,7 +20,6 @@ function createWindow () {
   win.webContents.openDevTools();
 
   server.init();
-  server.connect('127.0.0.1');
 }
 
 app.whenReady().then(createWindow);
@@ -45,15 +42,39 @@ app.on('activate', () => {
   }
 });
 
-ipcMain.on('msg', (event: any, arg: any) => {
+ipcMain.on('message', (event: any, arg: any) => {
   server.send(arg);
-})
+});
+
+ipcMain.on('connect', (event: any, arg: any) => {
+  server.connect(arg);
+});
+
+ipcMain.on('key', (event: any, arg: any) => {
+  server.setKey(arg);
+});
+
+ipcMain.on('reset-key', (event: any, arg: any) => {
+  server.resetKey();
+});
+
+ipcMain.on('disconnect', (event: any, arg: any) => {
+  server.disconnect();
+});
 
 server.on_message.subscribe((message) => {
-  win.webContents.send('msg', message);
+  win.webContents.send('message', message);
 });
 
 server.on_status.subscribe((status) => {
   console.log(status);
   console.log(server.address);
+  win.webContents.send('status', status);
+  if(!server.address) {
+    win.webContents.send('adress', '127.0.0.1');
+  } else if((server.address as any).address) {
+    win.webContents.send('adress', (server.address as any).address);
+  } else {
+    win.webContents.send('adress', server.address);
+  }
 });
