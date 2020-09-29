@@ -60,7 +60,7 @@ export class Server {
         this.server.listen(port, '0.0.0.0');
     } 
 
-    connect(ip: string, port: number = 2020) {
+    connect(ip: string, port: number = 3026) {
 
         if(this.status != Status.LISTENING) {
             throw "Already connected to a peer."

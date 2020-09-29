@@ -41,6 +41,13 @@ export class Server {
         } as WorkerMessage)
     }
 
+    initPort(port: number) {
+        this.server_process.send({
+            type: MessageType.INIT_SERVER,
+            payload: port
+        } as WorkerMessage)
+    }
+
     connect(address: string) {
         this.server_process.send({
             type: MessageType.CONNECT,

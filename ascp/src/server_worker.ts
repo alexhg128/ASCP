@@ -28,7 +28,12 @@ server.on_status.subscribe((status) => {
 process.on("message", (message: WorkerMessage) => {
     switch(message.type) {
         case MessageType.INIT_SERVER:
-            server.listen();
+            console.log(message);
+            if(typeof message.payload == 'number') {
+                server.listen(message.payload);
+            } else {
+                server.listen();
+            }
             break;
         case MessageType.CONNECT:
             server.connect(message.payload as string);

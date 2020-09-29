@@ -17,6 +17,7 @@ export class Server {
     on_message: Subject<string> = new Subject<string>();
 
     listen(port: number = 2020) {
+        console.log(port);
         this.server = net.createServer((socket) => {
 
             if(this.status != Status.LISTENING) {

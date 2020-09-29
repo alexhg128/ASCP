@@ -1,7 +1,8 @@
 import { Server } from "../server_interface";
 
 var server = new Server();
-server.init();
+server.initPort(3026);
+server.setKey("45df798932a6d6");
 
 server.on_status.subscribe((status) => {
     console.log(status);
