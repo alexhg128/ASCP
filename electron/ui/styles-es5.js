@@ -16,13 +16,13 @@
 
     exports = ___CSS_LOADER_API_IMPORT___(true); // Module
 
-    exports.push([module.i, "/* You can add global styles to this file, and also import other style files */", "", {
+    exports.push([module.i, "/* You can add global styles to this file, and also import other style files */\nbody {\n  background-color: #000;\n}", "", {
       "version": 3,
-      "sources": ["/Users/ophugo/Downloads/ASCP/angular/src/styles.scss"],
+      "sources": ["/Users/ophugo/Downloads/ASCP/angular/src/styles.scss", "styles.scss"],
       "names": [],
-      "mappings": "AAAA,8EAAA",
+      "mappings": "AAAA,8EAAA;AAGA;EACI,sBAAA;ACDJ",
       "file": "styles.scss",
-      "sourcesContent": ["/* You can add global styles to this file, and also import other style files */\n"]
+      "sourcesContent": ["/* You can add global styles to this file, and also import other style files */\n\n\nbody {\n    background-color: #000;\n}", "/* You can add global styles to this file, and also import other style files */\nbody {\n  background-color: #000;\n}"]
     }]); // Exports
 
     module.exports = exports;
