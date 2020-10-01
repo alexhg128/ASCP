@@ -1,10 +1,8 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
-import { stat } from 'fs';
 import { Server } from './messaging/server_interface';
 
 var win: BrowserWindow;
 var server: Server = new Server();
-server.setKey("afbcc30c363364");
 
 function createWindow () {
 
