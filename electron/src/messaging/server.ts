@@ -71,13 +71,13 @@ export class Server {
             throw "Not a valid ip.";
         }
 
+        this.address = ip;
+
         this.socket = new net.Socket();
         this.socket.connect(port, ip, () => {
             this.status = Status.CONNECTED_CLIENT;
             this.on_status.next(this.status);
         });
-
-        this.address = ip;
 
         this.socket.on('data', (data) => {
             try {

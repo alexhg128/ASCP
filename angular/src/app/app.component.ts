@@ -13,8 +13,63 @@ export class AppComponent {
   user:string;
   address:string;
   messageText:string;
-  messageArray:Message[] = [];
+  key:string;
+  messageArray:Message[] = [
+  ];
+  encrypted:boolean = false;
 
+  ipValidator(event: KeyboardEvent) {
+    switch(event.key) {
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+      case '.':
+        break;
+      default:
+        var value = ((event.target as any).value as string);
+        (event.target as any).value = value.substring(0, value.length - 1);
+    }
+  }
+
+  hexValidator(event: KeyboardEvent) {
+    switch(event.key) {
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+      case 'a':
+      case 'b':
+      case 'c':
+      case 'd':
+      case 'e':
+      case 'f':
+      case 'A':
+      case 'B':
+      case 'C':
+      case 'D':
+      case 'E':
+      case 'F':
+        break;
+      default:
+        var value = ((event.target as any).value as string);
+        (event.target as any).value = value.substring(0, value.length - 1);
+    }
+  }
+
+  
   constructor(private zone: NgZone) {
     electron.ipcRenderer.on('message', (event, arg) => {
       console.log(arg);
@@ -76,14 +131,29 @@ export class AppComponent {
   }
 
   setKey(key: string) {
-    console.log("Setting key");
+    if(!key) {
+      return;
+    }
+    if(key.length < 16) {
+      for(var i = 0; i < 16 - key.length; i++) {
+        key = '0' + key;
+      }
+      console.log(key);
+    }
     electron.ipcRenderer.send('key', key);
+    this.encrypted = !this.encrypted;
   }
 
   resetKey() {
     console.log("Reset key");
     electron.ipcRenderer.send('reset-key');
+    this.encrypted = !this.encrypted;
   }
+
+  clear() {
+    this.messageArray = [];
+  }
+  
 
 }
 

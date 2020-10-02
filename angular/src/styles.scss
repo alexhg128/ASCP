@@ -1,6 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
 
-
 body {
-    background-color: #000;
+    background: linear-gradient(151deg, rgba(30,0,204,1) 0%, rgba(29,244,65,1) 100%);
+    min-height: 100vh;
+    min-width: 100vw;
+    overflow: hidden;
 }

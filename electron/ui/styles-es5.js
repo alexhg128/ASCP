@@ -16,13 +16,13 @@
 
     exports = ___CSS_LOADER_API_IMPORT___(true); // Module
 
-    exports.push([module.i, "/* You can add global styles to this file, and also import other style files */\nbody {\n  background-color: #000;\n}", "", {
+    exports.push([module.i, "/* You can add global styles to this file, and also import other style files */\nbody {\n  background: linear-gradient(151deg, #1e00cc 0%, #1df441 100%);\n  min-height: 100vh;\n  min-width: 100vw;\n  overflow: hidden;\n}", "", {
       "version": 3,
       "sources": ["/Users/alex/Code/ASCP/angular/src/styles.scss", "styles.scss"],
       "names": [],
-      "mappings": "AAAA,8EAAA;AAGA;EACI,sBAAA;ACDJ",
+      "mappings": "AAAA,8EAAA;AAEA;EACI,6DAAA;EACA,iBAAA;EACA,gBAAA;EACA,gBAAA;ACAJ",
       "file": "styles.scss",
-      "sourcesContent": ["/* You can add global styles to this file, and also import other style files */\n\n\nbody {\n    background-color: #000;\n}", "/* You can add global styles to this file, and also import other style files */\nbody {\n  background-color: #000;\n}"]
+      "sourcesContent": ["/* You can add global styles to this file, and also import other style files */\n\nbody {\n    background: linear-gradient(151deg, rgba(30,0,204,1) 0%, rgba(29,244,65,1) 100%);\n    min-height: 100vh;\n    min-width: 100vw;\n    overflow: hidden;\n}", "/* You can add global styles to this file, and also import other style files */\nbody {\n  background: linear-gradient(151deg, #1e00cc 0%, #1df441 100%);\n  min-height: 100vh;\n  min-width: 100vw;\n  overflow: hidden;\n}"]
     }]); // Exports
 
     module.exports = exports;

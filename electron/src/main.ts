@@ -46,6 +46,8 @@ ipcMain.on('message', (event: any, arg: any) => {
 });
 
 ipcMain.on('connect', (event: any, arg: any) => {
+  console.log("Connecting");
+  console.log(arg);
   server.connect(arg);
 });
 
@@ -69,7 +71,9 @@ server.on_status.subscribe((status) => {
   console.log(status);
   console.log(server.address);
   win.webContents.send('status', status);
-  if(!server.address) {
+  if(!server.address && server.address != '') {
+    win.webContents.send('adress', server.address);
+  } else if(!server.address) {
     win.webContents.send('adress', '127.0.0.1');
   } else if((server.address as any).address) {
     win.webContents.send('adress', (server.address as any).address);
