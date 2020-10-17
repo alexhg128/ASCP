@@ -81,3 +81,8 @@ server.on_status.subscribe((status) => {
     win.webContents.send('adress', server.address);
   }
 });
+
+server.on_key.subscribe((key) => {
+  console.log("From main ", key);
+  win.webContents.send('key', key);
+})

@@ -197,6 +197,13 @@ class AppComponent {
                 this.address = arg;
             });
         });
+        electron.ipcRenderer.on('key', (event, arg) => {
+            console.log(arg);
+            zone.run(() => {
+                this.key = arg;
+                this.encrypted = !this.encrypted;
+            });
+        });
     }
     ipValidator(event) {
         switch (event.key) {
@@ -253,6 +260,7 @@ class AppComponent {
             // No esta conectado
             // Desbloquear botones
             this.blockButton = false;
+            this.encrypted = false;
         }
         else {
             // Conectado
@@ -269,6 +277,7 @@ class AppComponent {
         });
     }
     diconnect() {
+        this.encrypted = false;
         console.log("Disconnecting");
         electron.ipcRenderer.send('disconnect');
     }

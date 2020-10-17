@@ -389,6 +389,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             _this.address = arg;
           });
         });
+        electron.ipcRenderer.on('key', function (event, arg) {
+          console.log(arg);
+          zone.run(function () {
+            _this.key = arg;
+            _this.encrypted = !_this.encrypted;
+          });
+        });
       }
 
       _createClass(AppComponent, [{
@@ -454,6 +461,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             // No esta conectado
             // Desbloquear botones
             this.blockButton = false;
+            this.encrypted = false;
           } else {
             // Conectado
             // Bloquar botones
@@ -473,6 +481,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "diconnect",
         value: function diconnect() {
+          this.encrypted = false;
           console.log("Disconnecting");
           electron.ipcRenderer.send('disconnect');
         }

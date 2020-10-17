@@ -5,8 +5,10 @@ export default class ASCP {
 
     constructor(
         version: number,
-        message: string
+        message: string,
+        fun: number = 1
     ) {
+        this.fun = fun;
         this.version = version;
         this.size = message.length;
         if(this.size > 236) {

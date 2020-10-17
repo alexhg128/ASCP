@@ -3,6 +3,7 @@ import * as net from 'net'
 import { Subject } from 'rxjs';
 import ASCP from './ascp';
 import { from_bytes, from_encypted_bytes, from_string_v1 } from './ascp_factory';
+import { DiffieHellman } from './diffiehellman';
 
 export class Server {
 
@@ -12,16 +13,15 @@ export class Server {
     address: string | net.AddressInfo;
     key: any;
     encrypt: boolean = false;
+    dh: DiffieHellman = undefined;
 
     on_status: Subject<Status> = new Subject<Status>();
     on_message: Subject<string> = new Subject<string>();
+    on_key: Subject<string> = new Subject<string>();
 
     listen(port: number = 2020) {
         this.server = net.createServer((socket) => {
-
-            if(this.status != Status.LISTENING) {
-                socket.end();
-            }
+            this.server.maxConnections = 1;
 
             this.address = socket.address();
             this.status = Status.CONNECTED_SERVER;
@@ -34,14 +34,44 @@ export class Server {
                         this.on_message.next(frame.message);
                     } else {
                         var frame = from_bytes(new Uint8Array(data));
-                        this.on_message.next(frame.message);
+                        switch(frame.fun) {
+                            case 1:
+                                this.on_message.next(frame.message);
+                                break;
+                            case 2:
+                                var vars = this.parseDH(frame.message);
+                                this.dh = new DiffieHellman(vars['q'], vars['a']);
+                                this.dh.randomX();
+                                var ascp = from_string_v1(this.buildDH(vars['q'], vars['a'], this.dh.getY()));
+                                ascp.fun = 3;
+                                socket.write(ascp.to_bytes());
+
+                                var k = this.dh.getK(vars['y']);
+                                var k_s = k.toString(16);
+                                if(k_s.length < 16) {
+                                    for(var i = 0; i < 16 - k_s.length; i++) {
+                                      k_s = '0' + k_s;
+                                    }
+                                    console.log(k_s);
+                                }
+                                this.on_key.next(k_s);
+                                this.setKey(k_s);
+                                break;
+                            default:
+                                console.log("Unknown frame");
+                                console.log(frame);
+                        }
                     }
                 } catch(err) {
 
                 }
             });
 
-            socket.on("close", () => {
+            socket.on("end", () => {
+                console.log("Closing socket");
+                console.log(this.key);
+                this.resetKet();
+                console.log(this.key)
                 this.status = Status.LISTENING;
                 this.on_status.next(this.status);
             });
@@ -77,6 +107,11 @@ export class Server {
         this.socket.connect(port, ip, () => {
             this.status = Status.CONNECTED_CLIENT;
             this.on_status.next(this.status);
+            this.dh = new DiffieHellman(2426697107n, 17123207n);
+            this.dh.randomX();
+            var ascp = from_string_v1(this.buildDH(this.dh.q, this.dh.α, this.dh.getY()));
+            ascp.fun = 2;
+            this.socket.write(ascp.to_bytes());
         });
 
         this.socket.on('data', (data) => {
@@ -86,7 +121,28 @@ export class Server {
                     this.on_message.next(frame.message);
                 } else {
                     var frame = from_bytes(new Uint8Array(data));
-                    this.on_message.next(frame.message);
+                    switch(frame.fun) {
+                        case 1:
+                            this.on_message.next(frame.message);
+                            break;
+                        case 3:
+                            var vars = this.parseDH(frame.message);
+                            var k = this.dh.getK(vars['y']);
+                            var k_s = k.toString(16);
+                            if(k_s.length < 16) {
+                                for(var i = 0; i < 16 - k_s.length; i++) {
+                                  k_s = '0' + k_s;
+                                }
+                                console.log(k_s);
+                            }
+                            console.log(k_s);
+                            this.on_key.next(k_s);
+                            this.setKey(k_s);
+                            break;
+                        default:
+                            console.log("Unknown frame");
+                            console.log(frame);
+                    }
                     console.log("Received");
                     console.log(frame);
                 }
@@ -96,6 +152,7 @@ export class Server {
         });
 
         this.socket.on('close', () => {
+            this.resetKet();
             this.status = Status.LISTENING;
             this.on_status.next(this.status);
         });
@@ -104,7 +161,8 @@ export class Server {
 
     disconnect() {
         if(this.status != Status.LISTENING) {
-            this.socket.destroy();
+            this.resetKet();
+            this.socket.end();
         }
     }
 
@@ -138,6 +196,7 @@ export class Server {
     }
 
     resetKet() {
+        console.log("Reset key");
         this.encrypt = false;
         this.key = undefined;
     }
@@ -184,6 +243,26 @@ export class Server {
             i++;
         }
         return [].concat.apply([], result);
+    }
+
+    parseDH(str: string) {
+        var obj = {};
+        var lines = str.split(',');
+        for(var i = 0; i < lines.length; i++) {
+            var pair = lines[i].split('=');
+            console.log(pair[1]);
+            obj[pair[0]] = BigInt(pair[1]);
+        }
+        return obj;
+    }
+
+    buildDH(q: bigint, a: bigint, y: bigint) {
+        var str: string = "";
+        str += `q=${ q.toString() },`;
+        str += `a=${ a.toString() },`;
+        str += `y=${ y.toString() }`;
+        console.log(str);
+        return str;
     }
 
 }

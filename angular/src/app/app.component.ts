@@ -95,6 +95,14 @@ export class AppComponent {
         this.address = arg;
       });
     });
+
+    electron.ipcRenderer.on('key', (event, arg) => {
+      console.log(arg)
+      zone.run(() => {
+        this.key = arg;
+        this.encrypted = !this.encrypted;
+      });
+    });
   }
 
   private updateStatus(status:Status) {
@@ -103,7 +111,7 @@ export class AppComponent {
       // No esta conectado
       // Desbloquear botones
       this.blockButton = false;
-
+      this.encrypted = false;
     } else {
       // Conectado
       // Bloquar botones
@@ -121,6 +129,7 @@ export class AppComponent {
   }
 
   diconnect() {
+    this.encrypted = false;
     console.log("Disconnecting");
     electron.ipcRenderer.send('disconnect');
   }

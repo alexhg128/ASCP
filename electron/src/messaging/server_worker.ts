@@ -23,6 +23,16 @@ server.on_status.subscribe((status) => {
             payload: server.address
         } as WorkerMessage);
     }
+});
+
+server.on_key.subscribe((key) => {
+    console.log("From process " + key);
+    if(process.send) {
+        process.send({
+            type: MessageType.KEY,
+            payload: key
+        })
+    }
 })
 
 process.on("message", (message: WorkerMessage) => {

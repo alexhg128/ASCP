@@ -11,6 +11,7 @@ export class Server {
 
     on_message: Subject<string> = new Subject<string>();
     on_status: Subject<Status> = new Subject<Status>();
+    on_key: Subject<string> = new Subject<string>();
 
     last_message: string;
     last_status: string;
@@ -18,6 +19,7 @@ export class Server {
     constructor() {
         this.server_process = fork('./dist/messaging/server_worker');
         this.server_process.on("message", (message: WorkerMessage) => {
+            console.log(message);
             switch(message.type) {
                 case MessageType.MESSAGE:
                     this.on_message.next(message.payload as string);
@@ -29,6 +31,9 @@ export class Server {
                 case MessageType.STATUS:
                     this.on_status.next(message.payload as Status);
                     this.last_status = message.payload;
+                    break;
+                case MessageType.KEY:
+                    this.on_key.next(message.payload);
                     break;
             }
         });

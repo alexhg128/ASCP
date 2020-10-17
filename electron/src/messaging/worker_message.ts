@@ -13,5 +13,6 @@ export enum MessageType {
     RESET_KEY,
     MESSAGE,
     STATUS,
-    ADDRESS
+    ADDRESS,
+    KEY
 }

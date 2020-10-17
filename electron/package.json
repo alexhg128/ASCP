@@ -26,6 +26,7 @@
   "dependencies": {
     "@types/crypto-js": "^3.1.47",
     "crypto-js": "^4.0.0",
+    "random-bigint": "0.0.1",
     "rxjs": "^6.6.3"
   }
 }
