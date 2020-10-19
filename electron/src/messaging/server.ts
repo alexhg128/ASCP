@@ -48,9 +48,13 @@ export class Server {
 
                                 var k = this.dh.getK(vars['y']);
                                 var k_s = k.toString(16);
+                                console.log(k_s);
+                                console.log(k_s.length)
                                 if(k_s.length < 16) {
-                                    for(var i = 0; i < 16 - k_s.length; i++) {
+                                    var size = k_s.length;
+                                    for(var i = 0; i < 16 - size; i++) {
                                       k_s = '0' + k_s;
+                                      console.log(k_s);
                                     }
                                     console.log(k_s);
                                 }
@@ -111,6 +115,7 @@ export class Server {
             this.dh.randomX();
             var ascp = from_string_v1(this.buildDH(this.dh.q, this.dh.α, this.dh.getY()));
             ascp.fun = 2;
+            console.log(ascp);
             this.socket.write(ascp.to_bytes());
         });
 
@@ -129,8 +134,10 @@ export class Server {
                             var vars = this.parseDH(frame.message);
                             var k = this.dh.getK(vars['y']);
                             var k_s = k.toString(16);
+                            console.log(k_s)
                             if(k_s.length < 16) {
-                                for(var i = 0; i < 16 - k_s.length; i++) {
+                                var size =k_s.length;
+                                for(var i = 0; i < 16 - size; i++) {
                                   k_s = '0' + k_s;
                                 }
                                 console.log(k_s);
