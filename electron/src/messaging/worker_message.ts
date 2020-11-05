@@ -14,5 +14,6 @@ export enum MessageType {
     MESSAGE,
     STATUS,
     ADDRESS,
-    KEY
+    KEY,
+    TOOGLE_INTEGRITY
 }

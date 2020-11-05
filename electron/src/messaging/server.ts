@@ -16,7 +16,7 @@ export class Server {
     dh: DiffieHellman = undefined;
 
     on_status: Subject<Status> = new Subject<Status>();
-    on_message: Subject<string> = new Subject<string>();
+    on_message: Subject<ASCP> = new Subject<ASCP>();
     on_key: Subject<string> = new Subject<string>();
 
     listen(port: number = 2020) {
@@ -30,13 +30,14 @@ export class Server {
             socket.on("data", (data: Buffer) => {
                 try {
                     if(this.encrypt) {
+                        console.log(new Uint8Array(data))
                         var frame = from_encypted_bytes(new Uint8Array(data), this.key);
-                        this.on_message.next(frame.message);
+                        this.on_message.next(frame);
                     } else {
                         var frame = from_bytes(new Uint8Array(data));
                         switch(frame.fun) {
                             case 1:
-                                this.on_message.next(frame.message);
+                                this.on_message.next(frame);
                                 break;
                             case 2:
                                 var vars = this.parseDH(frame.message);
@@ -122,13 +123,14 @@ export class Server {
         this.socket.on('data', (data) => {
             try {
                 if(this.encrypt) {
+                    console.log(new Uint8Array(data))
                     var frame = from_encypted_bytes(new Uint8Array(data), this.key);
-                    this.on_message.next(frame.message);
+                    this.on_message.next(frame);
                 } else {
                     var frame = from_bytes(new Uint8Array(data));
                     switch(frame.fun) {
                         case 1:
-                            this.on_message.next(frame.message);
+                            this.on_message.next(frame);
                             break;
                         case 3:
                             var vars = this.parseDH(frame.message);
@@ -184,10 +186,24 @@ export class Server {
             console.log(bytes);
             if(this.encrypt) {
                 var ascp = from_string_v1(message);
+                if(!this.outgoingIntegrityCheck) {
+                    ascp.mac = new Uint8Array(20);
+                } else {
+                    ascp.updateMac();
+                    console.log(ascp);
+                }
+                console.log(ascp.to_bytes());
                 var bytes = ascp.to_encrypted_bytes(this.key);
+                console.log(bytes);
                 this.socket.write(bytes);
             } else {
                 var ascp = from_string_v1(message);
+                if(!this.outgoingIntegrityCheck) {
+                    ascp.mac = new Uint8Array(20);
+                } else {
+                    ascp.updateMac();
+                    console.log(ascp);
+                }
                 var bytes = ascp.to_bytes();
                 this.socket.write(bytes);
             }
@@ -270,6 +286,12 @@ export class Server {
         str += `y=${ y.toString() }`;
         console.log(str);
         return str;
+    }
+
+    outgoingIntegrityCheck:boolean = true;
+
+    toogleIntegrity() {
+        this.outgoingIntegrityCheck = !this.outgoingIntegrityCheck;
     }
 
 }

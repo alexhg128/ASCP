@@ -1,6 +1,7 @@
 import { ChildProcess, fork } from "child_process";
 import { AddressInfo } from "net";
 import { Subject } from "rxjs";
+import ASCP from "./ascp";
 import { Status } from "./server";
 import { MessageType, WorkerMessage } from "./worker_message";
 
@@ -9,11 +10,11 @@ export class Server {
     server_process: ChildProcess;
     address: string | AddressInfo;
 
-    on_message: Subject<string> = new Subject<string>();
+    on_message: Subject<ASCP> = new Subject<ASCP>();
     on_status: Subject<Status> = new Subject<Status>();
     on_key: Subject<string> = new Subject<string>();
 
-    last_message: string;
+    last_message: ASCP;
     last_status: string;
 
     constructor() {
@@ -22,7 +23,7 @@ export class Server {
             console.log(message);
             switch(message.type) {
                 case MessageType.MESSAGE:
-                    this.on_message.next(message.payload as string);
+                    this.on_message.next(message.payload as ASCP);
                     this.last_message = message.payload;
                     break;
                 case MessageType.ADDRESS:
@@ -84,6 +85,13 @@ export class Server {
     resetKey() {
         this.server_process.send({
             type: MessageType.RESET_KEY,
+            payload: {}
+        } as WorkerMessage)
+    }
+
+    toogleIntegrity() {
+        this.server_process.send({
+            type: MessageType.TOOGLE_INTEGRITY,
             payload: {}
         } as WorkerMessage)
     }

@@ -63,8 +63,15 @@ ipcMain.on('disconnect', (event: any, arg: any) => {
   server.disconnect();
 });
 
+ipcMain.on('toogle-integrity', (event: any, arg: any) => {
+  server.toogleIntegrity();
+});
+
 server.on_message.subscribe((message) => {
-  win.webContents.send('message', message);
+  win.webContents.send('message', {
+    message: message.message,
+    valid: message.valid
+  });
 });
 
 server.on_status.subscribe((status) => {

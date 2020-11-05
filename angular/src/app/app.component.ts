@@ -76,7 +76,8 @@ export class AppComponent {
       zone.run(() => {
         this.messageArray.push({
           user: this.address,
-          message: arg
+          message: arg['message'],
+          valid: arg['valid']
         });
         
       });
@@ -124,7 +125,8 @@ export class AppComponent {
     electron.ipcRenderer.send('message', this.messageText);
     this.messageArray.push({
       user:'Me',
-      message: this.messageText
+      message: this.messageText,
+      valid: true
     });
   }
 
@@ -162,6 +164,13 @@ export class AppComponent {
   clear() {
     this.messageArray = [];
   }
+
+  integrity: boolean = true;
+
+  toogleIntegrity() {
+    electron.ipcRenderer.send('toogle-integrity');
+    this.integrity = !this.integrity;
+  }
   
 
 }
@@ -169,6 +178,7 @@ export class AppComponent {
 interface Message {
   user: string;
   message:string;
+  valid:boolean;
 }
 
 enum Status {

@@ -28,6 +28,9 @@
         <button *ngIf="encrypted" type="submit" class="btn btn-primary" (click)="resetKey()">Delete Key</button>
         <br><br>
         <button type="submit" class="btn btn-primary" (click)="clear()">Clear Messages</button>
+        <br/><br/>
+        <button *ngIf="integrity" type="submit" class="btn btn-link" (click)="toogleIntegrity()">Disable Outgoing Integrity</button>
+        <button *ngIf="!integrity" type="submit" class="btn btn-link" (click)="toogleIntegrity()">Enable Outgoing Integrity</button>
       </div>
     </div>
 
@@ -46,6 +49,7 @@
 
             <div *ngIf="msg.user != 'Me'" style="display: flex; justify-content: flex-start">
               <div class="message-recv-cont">
+                <p class="failed-integrity" *ngIf="!msg.valid"><i class="material-icons-round">privacy_tip</i> The integrity of the following message cannot be confirmed.</p>
                 <p class="message-recv">
                   {{ msg.message }}
                 </p>

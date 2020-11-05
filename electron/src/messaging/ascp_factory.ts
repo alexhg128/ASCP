@@ -6,6 +6,7 @@ export var from_string_v1 = (message: string): ASCP => {
 }
 
 export var from_bytes = (bytes: Uint8Array): ASCP => {
+    console.log(bytes);
     var message = new ASCP(1, "");
     var decoder = new TextDecoder();
     if(decoder.decode(bytes.subarray(0, 4)) == "ASCP") {
@@ -48,6 +49,10 @@ export var from_bytes = (bytes: Uint8Array): ASCP => {
         var decoder = new TextDecoder();
         str = decoder.decode(bytes.subarray(20, 20 + message.size));
         message.message = str;
+
+        // Mac
+        message.mac = bytes.subarray(236, 256);
+        message.validate();
         
     } else {
         throw "Not and ASCP frame."
@@ -69,6 +74,8 @@ export var from_encypted_bytes = (bytes: Uint8Array, key: any): ASCP => {
     var decoded_bytes = new Uint8Array(wordArrayToByteArray(cry, 256));
     var title = decoder.decode(decoded_bytes.subarray(0, 4));
     if(title == "ASCP") {
+        console.log(decoded_bytes.subarray(157, 256));
+
         var sub : Uint8Array,
             len : number,
             buf : Buffer, 
@@ -108,6 +115,13 @@ export var from_encypted_bytes = (bytes: Uint8Array, key: any): ASCP => {
         var decoder = new TextDecoder();
         str = decoder.decode(decoded_bytes.subarray(20, 20 + message.size));
         message.message = str;
+
+        // Mac
+        message.mac = decoded_bytes.subarray(236, 256);
+        message.validate();
+
+        console.log(message);
+        console.log(message.calculateMac())
         
     } else {
         console.log("Not ASCP");

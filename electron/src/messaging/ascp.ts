@@ -11,12 +11,13 @@ export default class ASCP {
         this.fun = fun;
         this.version = version;
         this.size = message.length;
-        if(this.size > 236) {
-            this.size = 236;
-            this.message = message.substr(0,236);
+        if(this.size > 216) {
+            this.size = 216;
+            this.message = message.substr(0,216);
         } else {
             this.message = message;
         }
+        this.updateMac();
     }
 
     version: number;
@@ -25,6 +26,83 @@ export default class ASCP {
     state: number = 0;
     session: number = 0;
     message: string;
+    mac: Uint8Array = new Uint8Array(20);
+    valid: boolean = false;
+
+    updateMac() : void {
+        this.mac = this.calculateMac();
+    }
+
+    getvalidate() : boolean {
+        return this.compareByteArrays(this.mac, this.calculateMac());
+    }
+
+    validate() : void {
+        this.valid = this.getvalidate();
+    }
+
+
+    compareByteArrays(a1: Uint8Array, a2: Uint8Array) : boolean {
+        for(var i = 0; i < a1.length; i++) {
+            if(a1[i] != a2[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    calculateMac() : Uint8Array {
+        var bytes = this.to_partial_bytes();
+        var wa = this.byteArrayToWordArray(bytes);
+        var hash = CryptoJS.SHA1(wa);
+        var ba = this.wordArrayToByteArray(hash, 20);
+        return new Uint8Array(ba);
+    }
+
+    private to_partial_bytes() : Uint8Array {
+        var bytes = new Uint8Array(236);
+        bytes[0] = 65;
+        bytes[1] = 83;
+        bytes[2] = 67;
+        bytes[3] = 80;
+
+        var num_b;
+
+        // Version
+        num_b = this.get_bytes(this.version);
+        for(var i = 0; i < 5; i++) {
+            bytes[i + 4] = num_b[i + 3];
+        }
+
+        // Size
+        num_b = this.get_bytes(this.size);
+        bytes[9] = num_b[7];
+
+        // Function
+        num_b = this.get_bytes(this.fun);
+        for(var i = 0; i < 2; i++) {
+            bytes[i + 10] = num_b[i + 6];
+        }
+
+        // State
+        num_b = this.get_bytes(this.state);
+        for(var i = 0; i < 4; i++) {
+            bytes[i + 12] = num_b[i + 4];
+        }
+
+        // Session
+        num_b = this.get_bytes(this.session);
+        for(var i = 0; i < 4; i++) {
+            bytes[i + 16] = num_b[i + 4];
+        }
+
+        // Message
+        for(var i = 0; i < this.message.length; i++) {
+            bytes[i + 20] = this.message.charCodeAt(i);
+        }
+
+        return bytes;
+    }
 
     to_bytes() : Uint8Array {
         var bytes = new Uint8Array(256);
@@ -66,6 +144,11 @@ export default class ASCP {
         // Message
         for(var i = 0; i < this.message.length; i++) {
             bytes[i + 20] = this.message.charCodeAt(i);
+        }
+
+        // MAC
+        for(var i = 0; i < 20; i++) {
+            bytes[i + 236] = this.mac[i];
         }
 
         return bytes;
@@ -112,6 +195,13 @@ export default class ASCP {
         for(var i = 0; i < this.message.length; i++) {
             bytes[i + 20] = this.message.charCodeAt(i);
         }
+
+        // MAC
+        for(var i = 0; i < 20; i++) {
+            bytes[i + 236] = this.mac[i];
+        }
+
+        console.log(bytes[255]);
 
         var wa = this.byteArrayToWordArray(bytes);
         var cry = CryptoJS.DES.encrypt(wa, key, {

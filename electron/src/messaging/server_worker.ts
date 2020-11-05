@@ -58,5 +58,8 @@ process.on("message", (message: WorkerMessage) => {
         case MessageType.RESET_KEY:
             server.resetKet();
             break;
+        case MessageType.TOOGLE_INTEGRITY: 
+            server.toogleIntegrity();
+            break;
     }
 });
