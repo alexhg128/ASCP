@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import { Server } from './messaging/server_interface';
+import { getIP } from './networkInfo';
 
 var win: BrowserWindow;
 var server: Server = new Server();
@@ -65,6 +66,10 @@ ipcMain.on('disconnect', (event: any, arg: any) => {
 
 ipcMain.on('toogle-integrity', (event: any, arg: any) => {
   server.toogleIntegrity();
+});
+
+ipcMain.on('ip-check', (event: any, arg: any) => {
+  win.webContents.send('ip-list', getIP());
 });
 
 server.on_message.subscribe((message) => {

@@ -1,0 +1,87 @@
+<div class="ascp-container">
+    <div class="row">
+        <div class="col-4">
+            <div class="container" style="height: 90vh; border-right: 1px solid #d3d3d3; text-align: center;">
+                <br>
+                <h3><b>ASCP Messanger</b></h3>
+                <br>
+                <h5 *ngIf="blockButton"><b>✅ Connected</b></h5>
+                <h5 *ngIf="!blockButton"><b>❌ Disconnected</b></h5>
+                <h5 *ngIf="encrypted"><b>🔐 Secure</b></h5>
+                <h5 *ngIf="!encrypted"><b>🔓 Insecure</b></h5>
+                <h5 *ngIf="invalidContact"><b>❌ Invalid Contact</b></h5>
+                <br>
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">🖥 Contact</label>
+                    <input type="text" class="form-control" placeholder="example@example.com" [disabled]="blockButton"
+                        [(ngModel)]="address">
+                </div>
+                <button *ngIf="!blockButton" type="submit" class="btn btn-primary"
+                    (click)="connect(address)">Connect</button>
+                <button *ngIf="blockButton" type="submit" class="btn btn-primary"
+                    (click)="diconnect()">Disconnect</button>
+
+
+                <div class="form-group">
+                    <br>
+                    <label for="exampleFormControlInput1">🔑 Key</label>
+                    <input type="text" class="form-control" placeholder="00000000000000" [disabled]="encrypted"
+                        maxlength="16" [(ngModel)]="key">
+                </div>
+                <button *ngIf="!encrypted" type="submit" class="btn btn-primary" (click)="setKey(this.key)">Set
+                    Key</button>
+                <button *ngIf="encrypted" type="submit" class="btn btn-primary" (click)="resetKey()">Delete Key</button>
+                <br><br>
+                <button type="submit" class="btn btn-primary" (click)="clear()">Clear Messages</button>
+                <br /><br />
+                <button *ngIf="integrity" type="submit" class="btn btn-link" (click)="toogleIntegrity()">Disable
+                    Outgoing Integrity</button>
+                <button *ngIf="!integrity" type="submit" class="btn btn-link" (click)="toogleIntegrity()">Enable
+                    Outgoing Integrity</button>
+            </div>
+        </div>
+
+        <div class="col-8">
+            <div class="ascp-messages" style="padding-right: 2rem; padding-bottom: 2rem !important;">
+                <br>
+
+                <ng-container *ngFor="let msg of messageArray">
+                    <div *ngIf="msg.user == 'Me'" style="display: flex; justify-content: flex-end">
+                        <div class="message-sent-cont">
+                            <p class="message-sent">
+                                {{ msg.message }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div *ngIf="msg.user != 'Me'" style="display: flex; justify-content: flex-start">
+                        <div class="message-recv-cont">
+                            <p class="failed-integrity" *ngIf="!msg.valid"><i
+                                    class="material-icons-round">privacy_tip</i> The integrity of the following message
+                                cannot be confirmed.</p>
+                            <p class="message-recv">
+                                {{ msg.message }}
+                            </p>
+                        </div>
+                    </div>
+                </ng-container>
+
+
+            </div>
+            <div class="ascp-form">
+                <div class="row">
+                    <div class="col-10" style="padding: 0;">
+                        <input type="text" class="form-control" placeholder="Message" [disabled]="!blockButton"
+                            (keyup.enter)="send(); this.messageText = ''" [(ngModel)]="messageText" maxlength="236">
+                    </div>
+                    <div class="col-2" style="text-align: left;">
+                        <button type="submit" class="btn btn-primary" style="padding-bottom: 0;"
+                            [disabled]="!blockButton" (click)="send(); this.messageText = ''"><i
+                                class="material-icons-round">send</i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

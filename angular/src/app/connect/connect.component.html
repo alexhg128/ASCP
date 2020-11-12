@@ -1,0 +1,28 @@
+<div class="row align-items-center" style="height: 100vh;">
+    <div class="col-sm-12 col-md-8 col-lg-6 offset-md-2 offset-lg-3">
+        <div class="ascp-container">
+            <div class="container" style="text-align: center; padding: 50px;">
+                <br><br>
+                <h3><b>Select your IP</b></h3><br>
+                <h5 style="color: red;" *ngIf="error">Unexpected error, try again later</h5>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="ip" id="127.0.0.1" value="127.0.0.1" [(ngModel)]="ip" checked>
+                    <label class="form-check-label" for="127.0.0.1">
+                      127.0.0.1
+                    </label>
+                </div>
+
+                <div class="form-check" *ngFor="let x of validIP">
+                    <input class="form-check-input" type="radio" name="ip" [id]="x" [value]="x" [(ngModel)]="ip">
+                    <label class="form-check-label" [for]="x">
+                      {{ x }}
+                    </label>
+                </div>
+                <br>
+                <button type="submit" class="btn btn-primary" (click)="connect()">Continue</button>
+                <br><br>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
