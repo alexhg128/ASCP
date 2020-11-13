@@ -1,4 +1,4 @@
-import CryptoJS, { mode } from "crypto-js";
+import CryptoJS, { mode, pad } from "crypto-js";
 import ASCP from "./ascp";
 
 export var from_string_v1 = (message: string): ASCP => {
@@ -69,7 +69,8 @@ export var from_encypted_bytes = (bytes: Uint8Array, key: any): ASCP => {
         iv: undefined,
         salt: undefined
     }, key, {
-        mode: mode.ECB
+        mode: mode.ECB,
+        padding: pad.NoPadding
     });
     var decoded_bytes = new Uint8Array(wordArrayToByteArray(cry, 256));
     var title = decoder.decode(decoded_bytes.subarray(0, 4));

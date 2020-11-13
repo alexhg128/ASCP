@@ -1,4 +1,4 @@
-import CryptoJS from "crypto-js";
+import CryptoJS, { pad } from "crypto-js";
 import { mode } from "crypto-js";
 
 export default class ASCP {
@@ -205,7 +205,8 @@ export default class ASCP {
 
         var wa = this.byteArrayToWordArray(bytes);
         var cry = CryptoJS.DES.encrypt(wa, key, {
-            mode: mode.ECB
+            mode: mode.ECB,
+            padding: pad.NoPadding
         });
         var ba = this.wordArrayToByteArray(cry.ciphertext, 256);
         return new Uint8Array(ba);

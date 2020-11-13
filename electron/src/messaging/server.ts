@@ -128,6 +128,7 @@ export class Server {
                     this.on_message.next(frame);
                 } else {
                     var frame = from_bytes(new Uint8Array(data));
+                    console.log()
                     switch(frame.fun) {
                         case 1:
                             this.on_message.next(frame);
